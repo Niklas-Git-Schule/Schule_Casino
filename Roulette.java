@@ -42,55 +42,73 @@ public class Roulette {
     }
 
     public int start() {
+        //Position des Balls
         ballPos = (int) (Math.random() * rouletteRad.length);
 
+        //SCanner für die Eingabe
         Scanner scanner = new Scanner(System.in);
 
+        //Eingabe Variable
         String eingabe;
 
+        //Die Zahl auf der der Ball liegt
         int ballWert = rouletteRad[ballPos];
+
+        //Wichtige Variablen zur Ermittlung des Gewinns
         int gewinn = 0;
         int einsatz = 0;
         int zahl;
 
+        //Benutzt Um zu ermitteln welche Gruppen / welche Zahl gewonnen hat und damit den gewinn zu berechnen
+        ArrayList<Integer> zahlenGruppenW = new ArrayList<Integer>();
+        ArrayList<Integer> zahlList = new ArrayList<Integer>();
+
+        //Erlaubt dem Spieler weitere Wetten abzuschließen
         boolean neuerEinsatz = true;
 
+        //Wetten annahme
         while (neuerEinsatz) {
+
             System.out.println("Wie viel willst du einsetzen?");
             eingabe = scanner.nextLine();
             einsatz -= Integer.parseInt(eingabe);
-            System.out.println("Auf was willst du setzen?\n0 = Einzelne Zahlen (36 zu 1)\n1 = Rote Zahlen(2 zu 1)\n2 = Schwarze Zahlen(2 zu 1)\n3 = Gerade Zahlen(2 zu 1)\n4 = Ungerade Zahlen(2 zu 1)\n5 = Hohe Zahlen(2 zu 1)\n6 = Niedrige Zahlen(2 zu 1)\n7 = erstes Dutzend(3 zu 1)\n8 = zweites Dutzend(3 zu 1)\n9 = drittes Dutzend(3 zu 1)\n10 = erste Reihe(3 zu 1)\n11 = zweite Reihe(3 zu 1)\n12 = dritte Reihe(3 zu 1)");
 
+            System.out.println("Auf was willst du setzen?\n0 = Einzelne Zahlen (36 zu 1)\n1 = Rote Zahlen(2 zu 1)\n2 = Schwarze Zahlen(2 zu 1)\n3 = Gerade Zahlen(2 zu 1)\n4 = Ungerade Zahlen(2 zu 1)\n5 = Hohe Zahlen(2 zu 1)\n6 = Niedrige Zahlen(2 zu 1)\n7 = erstes Dutzend(3 zu 1)\n8 = zweites Dutzend(3 zu 1)\n9 = drittes Dutzend(3 zu 1)\n10 = erste Reihe(3 zu 1)\n11 = zweite Reihe(3 zu 1)\n12 = dritte Reihe(3 zu 1)");
             eingabe = scanner.nextLine();
             zahl = Integer.parseInt(eingabe);
 
             switch (zahl) {
                 case 0:
+
                     System.out.println("Auf welche Zahl willst du wetten?");
                     eingabe = scanner.nextLine();
                     bettingList.add(new bet(0, einsatz, Integer.parseInt(eingabe)));
+
                     System.out.println("Möchtest du noch eine Wette setzen (y/n)");
                     eingabe = scanner.nextLine();
                     if (eingabe.toLowerCase().equals("n")) {
                         neuerEinsatz = false;
                     }
+
                     break;
                 default:
                     if (zahl < 13 && zahl > 0) {
+
                         bettingList.add(new bet(zahl, einsatz));
                         System.out.println("Möchtest du noch eine Wette setzen (y/n)");
                         eingabe = scanner.nextLine();
                         if (eingabe.toLowerCase().equals("n")) {
                             neuerEinsatz = false;
                         }
+
                     } else {
                         System.err.println("Invalide Eingabe!!!");
                     }
                     break;
             }
         }
-        ArrayList<Integer> zahlenGruppenW = new ArrayList<Integer>();
-        ArrayList<Integer> zahlList = new ArrayList<Integer>();
+
+
         for (int i = 0; i < bets[0].length; i++) {
             if (bets[0][i] == ballWert) {
                 zahlList.add(bets[0][i]);
