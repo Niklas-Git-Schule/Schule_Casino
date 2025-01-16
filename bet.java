@@ -1,6 +1,6 @@
 public class bet{
-    private int zahl_bereich;
-    private int einsatz;
+    private final int zahl_bereich;
+    private final int einsatz;
     private int zahl;
 
     public bet (int zahl_bereich, int einsatz){
