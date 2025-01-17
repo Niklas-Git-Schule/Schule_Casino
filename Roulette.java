@@ -1,4 +1,7 @@
 import java.util.*;
+import java.io.File;
+import java.lang.Object;
+import javax.sound.sampled.*;
 
 public class Roulette {
     private final int[] rouletteRad = new int[]{0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26};
@@ -45,8 +48,14 @@ public class Roulette {
                 (zahl == 10) ? "der ersten Reihe" :
                 (zahl == 11) ? "der zweiten Reihe" : "der dritten Reihe";
     }
+
+    public String winSound = "Sounds_Roulette/win.wav";
+    public String bigWinSound = "Sounds_Roulette/big_win.wav";
+    public String loseSound = "Sounds_Roulette/lose.wav";
+    public String ballSound = "Sounds_Roulette/ball.wav";
+
     public Roulette() {}
-    public int start() {
+    public int start(){
         //Position des Balls
         int ballPos = (int) (Math.random() * rouletteRad.length);
 
@@ -77,12 +86,12 @@ public class Roulette {
 
         //Wetten annahme
         while (neuerEinsatz) {
-            try {
+            try{
                 Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+            }catch (Exception e){
+                e.printStackTrace();
             }
-            
+            System.out.println("\f");
             System.out.println("Wie viel willst du einsetzen?");
             eingabe = scanner.nextLine();
 
@@ -119,6 +128,13 @@ public class Roulette {
                 }
             }
         }
+        makeSound(ballSound);
+
+        try{
+            Thread.sleep(9000);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 
 
         for (int i = 0; i < bets[0].length; i++) {
@@ -135,10 +151,10 @@ public class Roulette {
                 }
             }
         }
-        try {
+        try{
             Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+        }catch (Exception e){
+            e.printStackTrace();
         }
         System.out.println("Die Zahl ist: " + ballWert);
         for (bet bet : bettingList) {
@@ -148,26 +164,58 @@ public class Roulette {
                 if (zahlList.contains(bet.getZahl())) {
                     gewinnRueck += bet.getEinsatz() * 36;
                     System.out.println("Du hast " + bet.getEinsatz() * 36 + " Chips Gewonnen auf: " + bet.getZahl());
+                    makeSound(bigWinSound);
+                    try{
+                        Thread.sleep(2000);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                    gewinnAnzahl++;
+                }else{
+                    System.out.println("Du hast deine Wette von " + bet.getEinsatz() + " auf der Zahl " + bet.getZahl() + " verloren!");
+                    makeSound(loseSound);
+                    try{
+                        Thread.sleep(500);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
                 }
-                gewinnAnzahl++;
             } else if (zahlenGruppenW.contains(bet.getZahl_bereich())) {
                 if (zahlBereich > 0 && zahlBereich < 6) {
                     gewinnRueck += bet.getEinsatz() * 2;
                     System.out.println("Du hast " + bet.getEinsatz() * 2 + " gewonnen auf: " + ZahlBereichAusgabe(zahlBereich));
+                    makeSound(winSound);
+                    try{
+                        Thread.sleep(500);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
                     gewinnAnzahl++;
                 } else if (zahlBereich > 6 && zahlBereich < 13) {
                     gewinnRueck += bet.getEinsatz() * 3;
                     System.out.println("Du hast " + bet.getEinsatz() * 3 + " gewonnen auf " + ZahlBereichAusgabe(zahlBereich));
+                    makeSound(winSound);
+                    try{
+                        Thread.sleep(500);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    };
                     gewinnAnzahl++;
                 }
 
             } else {
                 System.out.println("Du hast deine Wette von " + bet.getEinsatz() + " auf " + ZahlBereichAusgabe(zahlBereich) + " verloren!");
+                makeSound(loseSound);
+                try{
+                    Thread.sleep(500);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
             }
-            try {
+            try{
                 Thread.sleep(500);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+            }catch (Exception e){
+                e.printStackTrace();
             }
         }
         gewinnFinal = einsatzInsg + gewinnRueck;
@@ -182,7 +230,24 @@ public class Roulette {
                 : gewinnFinal < 0 ? Math.abs(gewinnFinal) + " Chip(s) verloren!"
                 : " nichts gewonnen oder verloren!")
         );
-        return gewinnFinal;
+        if(gewinnFinal != 0){
+            return gewinnFinal;
+        }else{
+            return einsatzInsg;
+        }
+
+    }
+    public void makeSound(String soundPath){
+        File sound = new File(soundPath);
+
+
+        try{
+            Clip clip = AudioSystem.getClip();
+            clip.open(AudioSystem.getAudioInputStream(sound));
+            clip.start();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override
