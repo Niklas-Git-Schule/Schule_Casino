@@ -3,7 +3,7 @@ import java.io.File;
 import java.lang.Object;
 import javax.sound.sampled.*;
 
-public class Roulette {
+public class Roulette extends Spiel{
     private final int[] rouletteRad = new int[]{0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26};
     /**
      * Bets:
@@ -55,7 +55,9 @@ public class Roulette {
     public String ballSound = "Sounds_Roulette/ball.wav";
 
     public Roulette() {}
-    public int start(){
+
+    @Override
+    public int start(int Void, Bank b){
         //Position des Balls
         int ballPos = (int) (Math.random() * rouletteRad.length);
 
@@ -127,6 +129,7 @@ public class Roulette {
                     System.err.println("Invalide Eingabe!!!");
                 }
             }
+            b.einsatz_rp
         }
         makeSound(ballSound);
 
