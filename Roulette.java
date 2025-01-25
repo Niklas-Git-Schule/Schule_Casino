@@ -4,7 +4,8 @@ import java.lang.Object;
 import javax.sound.sampled.*;
 
 public class Roulette extends Spiel{
-    private final int[] rouletteRad = new int[]{0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26};
+    private int spieleNr = 7;
+    private int[] rouletteRad = new int[]{0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26};
     /**
      * Bets:
      * 0 = Einzelne Zahlen
@@ -21,7 +22,7 @@ public class Roulette extends Spiel{
      * 11 = zweite Reihe
      * 12 = dritte Reihe
      */
-    private final int[][] bets = new int[][]{{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36},
+    private int[][] bets = new int[][]{{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36},
             {1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36},
             {2, 4, 6, 8, 10, 11, 13, 15, 17, 20, 22, 24, 26, 28, 29, 31, 33, 35},
             {2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36},
@@ -35,29 +36,17 @@ public class Roulette extends Spiel{
             {2, 5, 8, 11, 14, 17, 20, 23, 26, 29, 32, 35},
             {3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36}};
     //Gibt einen String zurueck basierend auf der uebergebenen Nummer
-    public  String ZahlBereichAusgabe(int zahl) {
-        return  (zahl == 1) ? "Rot" :
-                (zahl == 2) ? "Schwarz" :
-                (zahl == 3) ? "Gerade" :
-                (zahl == 4) ? "Ungerade" :
-                (zahl == 5) ? "Hoch" :
-                (zahl == 6) ? "Nieder" :
-                (zahl == 7) ? "dem ersten Dutzend" :
-                (zahl == 8) ? "dem zweiten Dutzend" :
-                (zahl == 9) ? "dem dritten Dutzend" :
-                (zahl == 10) ? "der ersten Reihe" :
-                (zahl == 11) ? "der zweiten Reihe" : "der dritten Reihe";
-    }
 
-    public String winSound = "Sounds_Roulette/win.wav";
-    public String bigWinSound = "Sounds_Roulette/big_win.wav";
-    public String loseSound = "Sounds_Roulette/lose.wav";
-    public String ballSound = "Sounds_Roulette/ball.wav";
+
+    private String winSound = "Sounds_Roulette/win.wav";
+    private String bigWinSound = "Sounds_Roulette/big_win.wav";
+    private String loseSound = "Sounds_Roulette/lose.wav";
+    private String ballSound = "Sounds_Roulette/ball.wav";
 
     public Roulette() {}
 
-    @Override
-    public int start(int Void, Bank b){
+    public int start(int Void, Bank bank){
+
         //Position des Balls
         int ballPos = (int) (Math.random() * rouletteRad.length);
 
@@ -86,6 +75,9 @@ public class Roulette extends Spiel{
         //Erlaubt dem Spieler weitere Wetten abzuschließen
         boolean neuerEinsatz = true;
 
+        //Überprüft ob die Wette <= dem Konto des Spielers ist
+        boolean valid;
+
         //Wetten annahme
         while (neuerEinsatz) {
             try{
@@ -95,41 +87,50 @@ public class Roulette extends Spiel{
             }
             System.out.println("\f");
             System.out.println("Wie viel willst du einsetzen?");
+            System.out.println("Dein Konto liegt bei " + bank.get_kontospieler());
             eingabe = scanner.nextLine();
 
-            einsatzInsg -= Integer.parseInt(eingabe);
-            einsatz = Integer.parseInt(eingabe);
-
-            System.out.println("Auf was willst du setzen?\n0 = Einzelne Zahlen (36 zu 1)\n1 = Rote Zahlen(2 zu 1)\n2 = Schwarze Zahlen(2 zu 1)\n3 = Gerade Zahlen(2 zu 1)\n4 = Ungerade Zahlen(2 zu 1)\n5 = Hohe Zahlen(2 zu 1)\n6 = Niedrige Zahlen(2 zu 1)\n7 = erstes Dutzend(3 zu 1)\n8 = zweites Dutzend(3 zu 1)\n9 = drittes Dutzend(3 zu 1)\n10 = erste Reihe(3 zu 1)\n11 = zweite Reihe(3 zu 1)\n12 = dritte Reihe(3 zu 1)");
-            eingabe = scanner.nextLine();
-            zahl = Integer.parseInt(eingabe);
-            if (zahl == 0) {
-                System.out.println("Auf welche Zahl willst du wetten?");
+            valid = bank.einsatz_rp(Integer.parseInt(eingabe));
+            if(valid){
+                einsatzInsg -= Integer.parseInt(eingabe);
+                einsatz = Integer.parseInt(eingabe);
+                System.out.println("Auf was willst du setzen?\n0 = Einzelne Zahlen (36 zu 1)\n1 = Rote Zahlen(2 zu 1)\n2 = Schwarze Zahlen(2 zu 1)\n3 = Gerade Zahlen(2 zu 1)\n4 = Ungerade Zahlen(2 zu 1)\n5 = Hohe Zahlen(2 zu 1)\n6 = Niedrige Zahlen(2 zu 1)\n7 = erstes Dutzend(3 zu 1)\n8 = zweites Dutzend(3 zu 1)\n9 = drittes Dutzend(3 zu 1)\n10 = erste Reihe(3 zu 1)\n11 = zweite Reihe(3 zu 1)\n12 = dritte Reihe(3 zu 1)");
                 eingabe = scanner.nextLine();
-                bettingList.add(new bet(0, einsatz, Integer.parseInt(eingabe)));
-                System.out.println("Du hast " + einsatz + " auf die Zahl " + eingabe + " gesetzt!");
+                zahl = Integer.parseInt(eingabe);
 
-                System.out.println("Möchtest du noch eine Wette setzen (y/n)");
-                eingabe = scanner.nextLine();
-                if (eingabe.equalsIgnoreCase("n")) {
-                    neuerEinsatz = false;
-                }
-            } else {
-                if (zahl < 13 && zahl > 0) {
-                    bettingList.add(new bet(zahl, einsatz));
-                    System.out.println("Du hast " + einsatz + " auf " + ZahlBereichAusgabe(zahl) + " gesetzt!");
+                if (zahl == 0) {
+                    System.out.println("Auf welche Zahl willst du wetten?");
+                    eingabe = scanner.nextLine();
+                    bettingList.add(new bet(0, einsatz, Integer.parseInt(eingabe)));
+                    System.out.println("Du hast " + einsatz + " auf die Zahl " + eingabe + " gesetzt!");
 
                     System.out.println("Möchtest du noch eine Wette setzen (y/n)");
                     eingabe = scanner.nextLine();
                     if (eingabe.equalsIgnoreCase("n")) {
                         neuerEinsatz = false;
                     }
-
                 } else {
-                    System.err.println("Invalide Eingabe!!!");
+                    if (zahl < 13 && zahl > 0) {
+
+                        bettingList.add(new bet(zahl, einsatz));
+                        System.out.println("Du hast " + einsatz + " auf " + ZahlBereichAusgabe(zahl) + " gesetzt!");
+
+
+                        System.out.println("Möchtest du noch eine Wette setzen (y/n)");
+                        eingabe = scanner.nextLine();
+                        if (eingabe.equalsIgnoreCase("n")) {
+                            neuerEinsatz = false;
+                        }
+
+                    } else {
+                        System.err.println("Invalide Eingabe!!!");
+                    }
                 }
+            }else{
+                System.err.println("Du kannst nicht mehr einsetzen als du auf dem Konto hast!!!");
             }
-            b.einsatz_rp
+
+
         }
         makeSound(ballSound);
 
@@ -234,8 +235,10 @@ public class Roulette extends Spiel{
                 : " nichts gewonnen oder verloren!")
         );
         if(gewinnFinal != 0){
+            bank.ergebnis(gewinnFinal, spieleNr);
             return gewinnFinal;
         }else{
+            bank.ergebnis(einsatzInsg, spieleNr);
             return einsatzInsg;
         }
 
@@ -252,8 +255,19 @@ public class Roulette extends Spiel{
             e.printStackTrace();
         }
     }
-
-    @Override
+    public  String ZahlBereichAusgabe(int zahl) {
+        return  (zahl == 1) ? "Rot" :
+                (zahl == 2) ? "Schwarz" :
+                (zahl == 3) ? "Gerade" :
+                (zahl == 4) ? "Ungerade" :
+                (zahl == 5) ? "Hoch" :
+                (zahl == 6) ? "Nieder" :
+                (zahl == 7) ? "dem ersten Dutzend" :
+                (zahl == 8) ? "dem zweiten Dutzend" :
+                (zahl == 9) ? "dem dritten Dutzend" :
+                (zahl == 10) ? "der ersten Reihe" :
+                (zahl == 11) ? "der zweiten Reihe" : "der dritten Reihe";
+    }
     public String toString() {
         StringBuilder rueckgabe = new StringBuilder();
         for (int j : rouletteRad) {
