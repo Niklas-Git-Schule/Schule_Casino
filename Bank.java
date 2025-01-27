@@ -99,7 +99,7 @@ public class Bank{
                 System.out.println("Loading...");
             }
         }
-        //archiv_fuehren(g, pos_spieler);
+        archiv_fuehren(g, pos_spieler);
     }
 
     public int get_kontospieler(){
@@ -107,7 +107,7 @@ public class Bank{
     }
     private void archiv_fuehren(int g, int pos_spieler){
         runde++;
-        Integer a [] = new Integer [5];
+        int a [] = new int[5];
         a[0] = chips_ges;
         a[1] = konto_spieler;
         a[2] = einsatz;
