@@ -6,7 +6,7 @@ public class Bank{
     private int konto_spieler;
     private int position = 1;
     private int runde;
-    ArrayList <Integer []> archiv= new ArrayList<>();
+    ArrayList <int[]> archiv= new ArrayList<>();
 
     public Bank(){
     chips_ges = 10000000;
@@ -106,8 +106,8 @@ public class Bank{
         return konto_spieler;
     }
     private void archiv_fuehren(int g, int pos_spieler){
-        runde++;
-        int a [] = new int[5];
+        
+        int a [] = new int [5];
         a[0] = chips_ges;
         a[1] = konto_spieler;
         a[2] = einsatz;
@@ -116,10 +116,12 @@ public class Bank{
         archiv.add(a);
 
         archiv_ausgeben();
+        runde++;
     }
 
     public void archiv_ausgeben(){
-         Integer b [] = archiv.get(runde);
+            int b [] = new int[5];
+            b = archiv.get(runde);
             System.out.println("Bankkonto: " + b[0]);
             System.out.println("Spielerkonto: " + b[1]);
             System.out.println("Einsatz: " + b[2]);
