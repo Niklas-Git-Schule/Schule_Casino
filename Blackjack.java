@@ -20,7 +20,7 @@ public class Blackjack extends Spiel{
                         Kartendeck[wert] = "Ass";
                     }
                     else if(wert == 10){
-                        Kartendeck[wert] = "König";
+                        Kartendeck[wert] = "Köni";
                     }
                     else if(wert == 11){
                         Kartendeck[wert] = "Dame";
